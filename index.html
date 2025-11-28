@@ -8,13 +8,14 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
+        /* CSS Variables */
         :root {
             --bg-body: #f4f6f9;
-            --primary: #3b82f6;
-            --secondary: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --primary: #3b82f6; /* Blue */
+            --secondary: #64748b; /* Gray */
+            --success: #10b981; /* Green */
+            --danger: #ef4444; /* Red */
+            --warning: #f59e0b; /* Orange */
             --white: #ffffff;
             --text-dark: #1f2937;
             --border-color: #e2e8f0;
@@ -89,7 +90,8 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--text-dark); }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 15px; box-sizing: border-box; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1em; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1em; transition: background 0.2s; }
+        .btn-primary:hover { background: #2563eb; }
 
         /* --- Public Cards --- */
         .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
@@ -99,13 +101,16 @@
         .pc-meta { display: flex; gap: 10px; margin-bottom: 15px; font-size: 0.9em; color: var(--secondary); flex-wrap: wrap; }
         .badge { background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; }
 
-        /* --- A4 Report Modal --- */
+        /* --- A4 Report Modal (Hafba) --- */
         #hafba-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; align-items: center; justify-content: center; }
         .modal-sidebar { width: 300px; background: white; height: 100%; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 15px; border-left: 1px solid #ddd; }
         .modal-content { flex: 1; height: 100%; overflow-y: auto; background: #525659; display: flex; justify-content: center; padding: 40px; }
         
         /* A4 Page Styling */
-        .a4-page { width: 210mm; min-height: 297mm; background: white; padding: 20mm; box-sizing: border-box; position: relative; }
+        .a4-page { 
+            width: 210mm; min-height: 297mm; background: white; padding: 20mm; box-sizing: border-box; 
+            position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.5); /* بۆ جوانی لەناو مۆدێلەکەدا */
+        }
         .doc-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #333; padding-bottom: 20px; margin-bottom: 30px; }
         .doc-logo img { width: 90px; height: 90px; }
         .doc-title { text-align: center; flex: 1; }
@@ -118,13 +123,15 @@
         .doc-img { height: 230px; border: 1px solid #000; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .doc-img img { width: 100%; height: 100%; object-fit: cover; }
         .doc-footer { position: absolute; bottom: 15px; left: 0; width: 100%; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 10px; }
-
+        
+        /* Print Styles */
         @media print {
+            .no-print { display: none !important; }
             body * { visibility: hidden; }
             #hafba-modal, #hafba-modal * { visibility: visible; }
             .modal-sidebar { display: none; }
-            .modal-content { background: white; padding: 0; overflow: visible; }
-            .a4-page { margin: 0; width: 100%; height: 100%; }
+            .modal-content { background: white; padding: 0; overflow: visible; width: 100%; height: auto; }
+            .a4-page { margin: 0; width: 100%; height: 100%; box-shadow: none; }
             #hafba-modal { position: absolute; left: 0; top: 0; background: white; }
         }
 
@@ -164,19 +171,38 @@
             <div class="form-group"><label>ناوی مامۆستا</label><input type="text" id="tName" placeholder="ناوی سیانی"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group"><label>وانە / بابەت</label><input type="text" id="tSubject"></div>
-                <div class="form-group"><label>ڕۆژ</label><select id="tDay"><option>شەممە</option><option>یەکشەممە</option><option>دووشەممە</option><option>سێشەممە</option><option>چوارشەممە</option><option>پێنجشەممە</option><option>هەینی</option></select></div>
+                <div class="form-group">
+                    <label>ڕۆژ</label>
+                    <select id="tDay">
+                        <option value="شەممە">شەممە</option>
+                        <option value="یەکشەممە">یەکشەممە</option>
+                        <option value="دووشەممە">دووشەممە</option>
+                        <option value="سێشەممە">سێشەممە</option>
+                        <option value="چوارشەممە">چوارشەممە</option>
+                        <option value="پێنجشەممە">پێنجشەممە</option>
+                        <option value="هەینی">هەینی</option>
+                    </select>
+                </div>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>وانەی چەندەم</label><select id="tPeriod"><option value="1">یەکەم</option><option value="2">دووەم</option><option value="3">سێیەم</option><option value="4">چوارەم</option><option value="5">پێنجەم</option><option value="6">شەشەم</option></select></div>
+                <div class="form-group">
+                    <label>وانەی چەندەم</label>
+                    <select id="tPeriod">
+                        <option value="یەکەم">یەکەم</option><option value="دووەم">دووەم</option>
+                        <option value="سێیەم">سێیەم</option><option value="چوارەم">چوارەم</option>
+                        <option value="پێنجەم">پێنجەم</option><option value="شەشەم">شەشەم</option>
+                    </select>
+                </div>
                 <div class="form-group"><label>بەروار</label><input type="date" id="tDate"></div>
             </div>
             <div class="form-group"><label>وردەکاری چالاکی</label><textarea id="tDesc" rows="4"></textarea></div>
             <button class="btn-primary" id="submitBtn" onclick="saveActivity()">تۆمارکردن</button>
-            <button class="btn-primary" id="cancelEditBtn" onclick="resetForm()" style="background:var(--secondary); margin-top:10px;" class="hidden">پاشگەزبوونەوە</button>
+            <button class="btn-primary hidden" id="cancelEditBtn" onclick="resetForm()" style="background:var(--secondary); margin-top:10px;">پاشگەزبوونەوە</button>
         </div>
     </div>
 
     <div id="admin-view" class="hidden">
+        
         <div id="pin-screen" class="form-card" style="text-align: center; max-width: 400px;">
             <h3>🔒 ناوچەی ئەدمین</h3>
             <div class="form-group"><input type="password" id="adminPin" style="text-align: center; letter-spacing: 5px; font-size: 20px;" placeholder="****"></div>
@@ -209,16 +235,19 @@
             <div id="tab-report" class="hidden">
                 <div class="table-container">
                     <div class="table-header">
-                        <h3>ڕاپۆرتی مانگانە (تێکست)</h3>
+                        <h3>ڕاپۆرتی مانگانە</h3>
                         <div>
                             <label style="display:inline;">مانگ دیاری بکە: </label>
                             <input type="month" id="reportMonth" onchange="generateMonthlyReport()" style="width: auto; padding: 5px;">
                         </div>
                     </div>
+                    <div style="padding: 15px 20px; background: #e0f2fe; border-bottom: 1px solid #99d2f7;">
+                        <p style="margin:0; font-weight:bold;">ئاماری مانگ: <span id="reportStatTeachers" style="color:var(--primary);">0</span> مامۆستا چالاکیان کردووە.</p>
+                    </div>
                     <table>
-                        <thead><tr><th>بەروار</th><th>ڕۆژ</th><th>مامۆستا</th><th>بابەت</th><th>وانە</th><th>چالاکی</th></tr></thead>
+                        <thead><tr><th>بەروار</th><th>ڕۆژ</th><th>مامۆستا</th><th>بابەت</th><th>وردەکاری</th></tr></thead>
                         <tbody id="monthlyReportList">
-                            <tr><td colspan="6" style="text-align:center;">تکایە مانگێک هەڵبژێرە</td></tr>
+                            <tr><td colspan="5" style="text-align:center;">تکایە مانگێک هەڵبژێرە</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -231,8 +260,14 @@
 <div id="hafba-modal" class="hidden">
     <div class="modal-sidebar no-print">
         <h3 style="margin-top:0;">وێنەی چالاکی (A4)</h3>
-        <p style="font-size:0.9em; color:#666;">تکایە لێرە ٤ وێنە زیاد بکە:</p>
+        <p style="font-size:0.9em; color:#666;">تکایە لێرە تا ٤ وێنە زیاد بکە:</p>
         <input type="file" id="adminImageInput" multiple accept="image/*" onchange="previewA4Images(this)">
+        
+        <h4 style="border-top: 1px solid #ddd; padding-top: 10px;">چالاکیەکانی مامۆستا</h4>
+        <div id="teacherActsList" style="overflow-y: auto; max-height: 200px; border: 1px solid #eee; padding: 10px; background: #f9f9f9;">
+            <p style="font-size: 0.85em; color:#888;">چالاکیەکان لێرە دەردەکەون...</p>
+        </div>
+
         <div style="margin-top: auto; display:flex; flex-direction:column; gap:10px;">
             <button onclick="window.print()" class="btn-primary" style="background: var(--warning); color:black;">🖨️ پرێنت (Print)</button>
             <button onclick="saveAsJpeg()" class="btn-primary">🖼️ سەیڤ (JPEG)</button>
@@ -262,11 +297,14 @@
 </div>
 
 <script type="module">
+    // ... هەمان کۆدی Firebase Configurations
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyDI8eXKnSRh7EVmImQSHsaL-RUPQBikj0I",
+        // AIzaSyDI8eXKnSRh7EVmImQSHsaL-RUPQBikj0I
+        apiKey: "AIzaSyDI8eXKnSRh7EVmImQSHsaL-RUPQBikj0I", 
         authDomain: "gzngschool-2b3eb.firebaseapp.com",
         projectId: "gzngschool-2b3eb",
         storageBucket: "gzngschool-2b3eb.firebasestorage.app",
@@ -278,8 +316,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // وەک پێشتر، ئەم پینە لە Frontend دا پارێزراو نییە.
     const SCHOOL_PIN = "2024";
     let allActs = [];
+    let currentTeacherName = null; // بۆ بەشی ڕاپۆرتی وێنەیی
 
     window.showTab = (tab) => {
         ['home', 'add', 'admin'].forEach(t => document.getElementById(t+'-view').classList.add('hidden'));
@@ -287,7 +327,13 @@
         document.getElementById(tab+'-view').classList.remove('hidden');
         const btns = document.querySelectorAll('.nav-btn');
         if(tab==='home') btns[0].classList.add('active');
-        if(tab==='add') { btns[1].classList.add('active'); document.getElementById('tDate').valueAsDate = new Date(); }
+        if(tab==='add') { 
+            btns[1].classList.add('active'); 
+            // دانانی بەرواری ئێستا و ڕۆژی دروست لەکاتی کردنەوەی فۆڕمی تۆمارکردن
+            document.getElementById('tDate').valueAsDate = new Date(); 
+            document.getElementById('tDay').value = getTodayName();
+            resetForm(); // بۆ دڵنیابوونەوەی ئەوەی فۆڕمەکە بەتاڵ دەبێتەوە
+        }
         if(tab==='admin') btns[2].classList.add('active');
     }
 
@@ -304,14 +350,14 @@
         const date = document.getElementById('tDate').value;
         const desc = document.getElementById('tDesc').value;
         if(!name || !sub || !date || !desc) return alert("⚠️ تکایە هەموو خانەکان پڕ بکەرەوە");
-        btn.innerText = "جاری دەنێرێت... ⏳"; btn.disabled = true;
+        btn.innerText = (editId ? "جاری نوێ دەکاتەوە... ⏳" : "جاری دەنێرێت... ⏳"); btn.disabled = true;
         try {
             const payload = { teacherName: name, subject: sub, dayOfWeek: day, period: per, date: date, description: desc, timestamp: new Date() };
             if(editId) { await updateDoc(doc(db, "activities", editId), payload); alert("✅ نوێکرایەوە!"); }
-            else { await addDoc(collection(db, "activities"), payload); alert("✅ چالاکی تۆمارکرا!"); }
+            else { await addDoc(collection(db, "activities", ), payload); alert("✅ چالاکی تۆمارکرا!"); }
             resetForm(); window.showTab('home');
         } catch(e) { alert("هەڵە: " + e.message); }
-        btn.innerText = "تۆمارکردن"; btn.disabled = false;
+        btn.innerText = (editId ? "نوێکردنەوە" : "تۆمارکردن"); btn.disabled = false;
     }
 
     window.resetForm = () => {
@@ -324,7 +370,8 @@
         document.getElementById('cancelEditBtn').classList.add('hidden');
     }
 
-    const q = query(collection(db, "activities"), orderBy("date", "desc"));
+    // لۆجیکی بارکردنی داتا لە Firebase و نیشاندان
+    const q = query(collection(db, "activities"), orderBy("date", "desc"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snap) => {
         allActs = [];
         const homeList = document.getElementById('activitiesList');
@@ -351,9 +398,9 @@
                     <td><strong>${data.teacherName}</strong></td><td><span class="status-badge">${data.subject}</span></td><td>${data.date}<br><small>${data.dayOfWeek}</small></td>
                     <td>
                         <div class="action-btns">
-                            <button class="btn-icon print" onclick="openHafba('${data.id}')" title="A4 وێنە">🖼️ A4</button>
-                            <button class="btn-icon" onclick="editAct('${data.id}')" title="Edit">✏️</button>
-                            <button class="btn-icon delete" onclick="delAct('${data.id}')" title="Delete">🗑️</button>
+                            <button class="btn-icon print" onclick="openHafba('${data.id}')" title="فۆڕمی A4">🖼️ A4</button>
+                            <button class="btn-icon" onclick="editAct('${data.id}')" title="نوێکردنەوە">✏️</button>
+                            <button class="btn-icon delete" onclick="delAct('${data.id}')" title="سڕینەوە">🗑️</button>
                         </div>
                     </td>
                 </tr>`;
@@ -364,7 +411,7 @@
         document.getElementById('statTeachers').innerText = uniqueTeachers.size;
     });
 
-    // --- NEW ADMIN TABS LOGIC ---
+    // --- لۆجیکی Admin Tabs ---
     window.switchAdminTab = (tab) => {
         const manageDiv = document.getElementById('tab-manage');
         const reportDiv = document.getElementById('tab-report');
@@ -377,41 +424,73 @@
         } else {
             manageDiv.classList.add('hidden'); reportDiv.classList.remove('hidden');
             btnManage.classList.remove('active'); btnReport.classList.add('active');
+            // کاتێک دەچێتە سەر ڕاپۆرت، داوای دروستکردنی ڕاپۆرتەکە دەکات ئەگەر مانگ دیاری کرابێت
+            generateMonthlyReport(); 
         }
     }
 
-    // --- MONTHLY REPORT LOGIC ---
+    // --- لۆجیکی ڕاپۆرتی مانگانە ---
     window.generateMonthlyReport = () => {
         const monthVal = document.getElementById('reportMonth').value; // YYYY-MM
         const tbody = document.getElementById('monthlyReportList');
+        const statTeachers = document.getElementById('reportStatTeachers');
         tbody.innerHTML = "";
+        statTeachers.innerText = "0";
 
-        if(!monthVal) return;
-
-        const filtered = allActs.filter(a => a.date.startsWith(monthVal));
-        if(filtered.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>هیچ چالاکیەک لەم مانگەدا نییە</td></tr>";
+        if(!monthVal) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>تکایە مانگێک هەڵبژێرە</td></tr>";
             return;
         }
 
+        const filtered = allActs.filter(a => a.date.startsWith(monthVal));
+        if(filtered.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>هیچ چالاکیەک لەم مانگەدا نییە</td></tr>";
+            return;
+        }
+        
+        const monthlyTeachers = new Set();
+
         filtered.forEach(a => {
+            monthlyTeachers.add(a.teacherName);
             tbody.innerHTML += `
                 <tr>
                     <td>${a.date}</td><td>${a.dayOfWeek}</td><td><strong>${a.teacherName}</strong></td>
-                    <td>${a.subject}</td><td>${a.period}</td><td>${a.description.substring(0, 40)}...</td>
+                    <td>${a.subject} (وانەی ${a.period})</td><td>${a.description.substring(0, 70)}${a.description.length > 70 ? '...' : ''}</td>
                 </tr>`;
         });
+        
+        statTeachers.innerText = monthlyTeachers.size;
     }
 
-    // --- HAFBA LOGIC ---
+    // --- لۆجیکی ڕاپۆرتی وێنەیی A4 (HAFBA) ---
     window.openHafba = (id) => {
         const act = allActs.find(a => a.id === id);
         if(!act) return;
+        
+        // دانانی داتای چالاکی دیاریکراو لە A4
         document.getElementById('p-teacher').innerText = act.teacherName;
         document.getElementById('p-subject').innerText = act.subject;
         document.getElementById('p-date-full').innerText = act.dayOfWeek + " (" + act.date + ")";
         document.getElementById('p-period').innerText = act.period;
         document.getElementById('p-desc').innerText = act.description;
+
+        // لیستی چالاکیەکانی مامۆستای دیاریکراو
+        currentTeacherName = act.teacherName;
+        const teacherActs = allActs.filter(a => a.teacherName === currentTeacherName);
+        const listDiv = document.getElementById('teacherActsList');
+        listDiv.innerHTML = "";
+        
+        teacherActs.forEach(ta => {
+            listDiv.innerHTML += `
+                <div style="border-bottom: 1px dotted #ccc; padding: 5px 0; display:flex; justify-content:space-between; align-items:center;">
+                    <p style="margin:0; font-size:0.85em;">
+                        <strong>${ta.subject}</strong> لە ${ta.date} 
+                        <span style="color:var(--primary); cursor:pointer;" onclick="editAct('${ta.id}')">✏️</span>
+                    </p>
+                </div>
+            `;
+        });
+        
         document.getElementById('adminImageInput').value = "";
         document.getElementById('p-images-grid').innerHTML = `<div class="doc-img">وێنە ١</div><div class="doc-img">وێنە ٢</div><div class="doc-img">وێنە ٣</div><div class="doc-img">وێنە ٤</div>`;
         document.getElementById('hafba-modal').classList.remove('hidden');
@@ -420,37 +499,82 @@
     window.previewA4Images = (input) => {
         const grid = document.getElementById('p-images-grid');
         grid.innerHTML = "";
-        if (input.files && input.files.length > 0) {
-            Array.from(input.files).slice(0, 4).forEach(file => {
+        // تەنها یەک جار خوێندنەوەی هەموو وێنەکان
+        const files = Array.from(input.files).slice(0, 4);
+        
+        for (let i = 0; i < 4; i++) {
+            const file = files[i];
+            const div = document.createElement('div');
+            div.className = 'doc-img';
+
+            if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => grid.innerHTML += `<div class="doc-img"><img src="${e.target.result}"></div>`;
+                reader.onload = (e) => {
+                    div.innerHTML = `<img src="${e.target.result}" alt="چالاکی">`;
+                };
                 reader.readAsDataURL(file);
-            });
+            } else {
+                div.innerText = `وێنە ${i + 1}`;
+            }
+            grid.appendChild(div);
         }
     }
 
     window.saveAsJpeg = () => {
-        html2canvas(document.getElementById("capture-area"), { scale: 2, useCORS: true }).then(canvas => {
-            const link = document.createElement("a"); link.download = "Report.jpg";
-            link.href = canvas.toDataURL("image/jpeg"); link.click();
+        // کرتە دەکەینە سەر "Capture-Area" بۆ وێنەگرتن
+        const captureArea = document.getElementById("capture-area");
+        // نیشاندەری لۆدینگ
+        const saveBtn = document.querySelector('.modal-sidebar .btn-primary:nth-child(2)');
+        const originalText = saveBtn.innerText;
+        saveBtn.innerText = "سەیڤ دەکات... ⏳"; saveBtn.disabled = true;
+
+        html2canvas(captureArea, { scale: 2, useCORS: true }).then(canvas => {
+            const link = document.createElement("a"); 
+            link.download = `Report_${document.getElementById('p-teacher').innerText}_${document.getElementById('p-date-full').innerText}.jpg`;
+            link.href = canvas.toDataURL("image/jpeg", 0.9); // 0.9 کوالێتییە
+            link.click();
+            saveBtn.innerText = originalText; saveBtn.disabled = false;
+        }).catch(err => {
+            alert("هەڵە لە دروستکردنی وێنە: " + err);
+            saveBtn.innerText = originalText; saveBtn.disabled = false;
         });
     }
 
     window.closeHafba = () => document.getElementById('hafba-modal').classList.add('hidden');
+    
+    // --- Admin Security & Actions ---
     window.checkPin = () => {
         if(document.getElementById('adminPin').value === SCHOOL_PIN) {
             document.getElementById('pin-screen').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
+            alert("بەخێربێیت بۆ ناوچەی ئەدمین!");
         } else alert("کۆد هەڵەیە");
     }
-    window.logout = () => location.reload();
-    window.delAct = async(id) => { if(confirm("بیسڕمەوە؟")) await deleteDoc(doc(db,"activities",id)); }
+    window.logout = () => { 
+        document.getElementById('pin-screen').classList.remove('hidden');
+        document.getElementById('admin-dashboard').classList.add('hidden');
+        document.getElementById('adminPin').value = '';
+        window.showTab('home'); // گەڕانەوە بۆ بەشی سەرەکی
+    }
+    window.delAct = async(id) => { 
+        if(confirm("دڵنیای لە سڕینەوەی ئەم چالاکییە؟")) {
+             await deleteDoc(doc(db,"activities",id)); 
+             alert("سڕایەوە!");
+        }
+    }
     window.editAct = (id) => {
         const a = allActs.find(x=>x.id===id); if(!a) return;
+        
         document.getElementById('editId').value = a.id;
         document.getElementById('tName').value = a.teacherName;
         document.getElementById('tSubject').value = a.subject;
         document.getElementById('tDesc').value = a.description;
+        document.getElementById('tDate').value = a.date;
+        
+        // *چاککردنی کێشەی دیارینەکردنی نرخی ڕۆژ و وانە*
+        document.getElementById('tDay').value = a.dayOfWeek;
+        document.getElementById('tPeriod').value = a.period;
+
         document.getElementById('submitBtn').innerText = "نوێکردنەوە";
         document.getElementById('cancelEditBtn').classList.remove('hidden');
         document.getElementById('hafba-modal').classList.add('hidden');
