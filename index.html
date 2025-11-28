@@ -22,7 +22,6 @@
             margin: 0; padding: 0; color: #333;
         }
 
-        /* --- Header & Nav --- */
         header {
             background: linear-gradient(135deg, #141e30, #243b55);
             color: white; padding: 15px; text-align: center;
@@ -44,7 +43,6 @@
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
         
-        /* --- Forms --- */
         .form-box {
             background: white; padding: 25px; border-radius: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); margin-bottom: 20px;
@@ -63,7 +61,6 @@
         .btn-gold { background: var(--gold); color: #333; }
         .btn-hafba { background: #2c3e50; color: white; border: 1px solid #333; }
         
-        /* --- Activity List --- */
         .activity-card {
             background: white; margin-bottom: 20px; border-radius: 10px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.05); overflow: hidden;
@@ -73,11 +70,9 @@
         .act-body { padding: 15px; }
         .act-meta { display: flex; gap: 15px; font-size: 0.9em; color: #555; margin-bottom: 10px; background: #eee; padding: 8px; border-radius: 5px; flex-wrap: wrap; }
 
-        /* --- Admin Controls --- */
         .admin-controls { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
         .admin-controls button { flex: 1; font-size: 0.9em; }
 
-        /* --- Hafba Modal --- */
         #hafba-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000; display: flex;
@@ -89,15 +84,12 @@
             margin-bottom: 20px; text-align: center;
         }
 
-        /* --- A4 Paper Design --- */
         #a4-preview-container {
             background: #525659; padding: 20px; width: 100%; display: flex; justify-content: center;
             overflow: auto;
         }
         .a4-page {
-            width: 794px; /* A4 Width in px at 96dpi */
-            min-height: 1123px; /* A4 Height */
-            background: white; 
+            width: 794px; min-height: 1123px; background: white; 
             padding: 40px; box-sizing: border-box; position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
@@ -202,7 +194,6 @@
     </div>
 
     <div id="admin-view" class="hidden">
-        
         <div id="pin-screen" class="form-box" style="text-align: center; max-width: 350px; margin: 40px auto;">
             <h3>🔒 بەشی ئەدمین</h3>
             <p>تکایە کۆدی نهێنی بنووسە</p>
@@ -275,7 +266,6 @@
 </div>
 
 <script type="module">
-    // تەنها داتابەیسمان پێویستە، ستۆریجم ل لابرد
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
@@ -295,22 +285,23 @@
     const SCHOOL_PIN = "2024";
     let allActs = [];
 
-    // --- Helpers ---
     window.showTab = (tab) => {
         ['home', 'add', 'admin'].forEach(t => document.getElementById(t+'-view').classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tab+'-view').classList.remove('hidden');
-        
         const btns = document.querySelectorAll('.nav-btn');
         if(tab==='home') btns[0].classList.add('active');
-        if(tab==='add') btns[1].classList.add('active');
+        if(tab==='add') {
+            btns[1].classList.add('active');
+            // کاتێک دەچێتە سەر فۆڕمەکە، بەرواری ئەمڕۆ دادەنێت
+            document.getElementById('tDate').valueAsDate = new Date();
+        }
         if(tab==='admin') btns[2].classList.add('active');
     }
 
     const getTodayName = () => ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'][new Date().getDay()];
     document.getElementById('todayDateDisplay').innerText = `ئەمڕۆ: ${getTodayName()} (${new Date().toLocaleDateString('ku-IQ')})`;
 
-    // --- Teacher Save Logic (TEXT ONLY) ---
     window.saveActivity = async () => {
         const btn = document.getElementById('submitBtn');
         const editId = document.getElementById('editId').value;
@@ -321,7 +312,11 @@
         const date = document.getElementById('tDate').value;
         const desc = document.getElementById('tDesc').value;
 
-        if(!name || !sub || !date || !desc) return alert("تکایە خانەکان پڕ بکەرەوە");
+        // Validation - وردەکاری بۆ ئەوەی بزانیت کامەی بەتاڵە
+        if(!name) return alert("❌ تکایە ناوی سیانی مامۆستا بنووسە");
+        if(!sub) return alert("❌ تکایە بابەت / وانە بنووسە");
+        if(!date) return alert("❌ تکایە بەروار دیاری بکە");
+        if(!desc) return alert("❌ تکایە وردەکاری چالاکی بنووسە");
 
         btn.innerText = "جاری دەنێرێت... ⏳";
         btn.disabled = true;
@@ -335,10 +330,10 @@
 
             if(editId) {
                 await updateDoc(doc(db, "activities", editId), payload);
-                alert("زانیارییەکان نوێکرانەوە!");
+                alert("✅ زانیارییەکان نوێکرانەوە!");
             } else {
                 await addDoc(collection(db, "activities"), payload);
-                alert("سوپاس مامۆستا، چالاکیەکەت تۆمارکرا!");
+                alert("✅ سوپاس مامۆستا، چالاکیەکەت تۆمارکرا!");
             }
             resetForm();
             window.showTab('home');
@@ -354,18 +349,17 @@
         document.getElementById('tName').value = "";
         document.getElementById('tSubject').value = "";
         document.getElementById('tDesc').value = "";
+        document.getElementById('tDate').valueAsDate = new Date(); // Reset to today
         document.getElementById('submitBtn').innerText = "تۆمارکردن ✅";
         document.getElementById('cancelEditBtn').classList.add('hidden');
     }
 
-    // --- Load Data (TEXT ONLY) ---
     const q = query(collection(db, "activities"), orderBy("date", "desc"));
     onSnapshot(q, (snap) => {
         allActs = [];
         const homeList = document.getElementById('activitiesList');
         const adminList = document.getElementById('adminActivitiesList');
         homeList.innerHTML = ""; adminList.innerHTML = "";
-
         const todayStr = new Date().toISOString().split('T')[0];
 
         snap.forEach(d => {
@@ -373,7 +367,6 @@
             allActs.push(data);
             const isToday = (data.date === todayStr);
 
-            // 1. PUBLIC LIST
             homeList.innerHTML += `
                 <div class="activity-card" style="${isToday ? 'border-right: 5px solid var(--success);' : ''}">
                     <div class="act-header">
@@ -391,7 +384,6 @@
                 </div>
             `;
 
-            // 2. ADMIN LIST
             adminList.innerHTML += `
                 <div class="activity-card">
                     <div class="act-header">
@@ -412,19 +404,14 @@
         if(allActs.length === 0) homeList.innerHTML = "<p style='text-align:center'>هیچ نییە</p>";
     });
 
-    // --- HAFBA LOGIC (LOCAL IMAGES) ---
     window.openHafba = (id) => {
         const act = allActs.find(a => a.id === id);
         if(!act) return;
-
-        // Fill Text Info from DB
         document.getElementById('p-teacher').innerText = "م. " + act.teacherName;
         document.getElementById('p-subject').innerText = "بابەت: " + act.subject;
         document.getElementById('p-date').innerText = "بەروار: " + act.date;
         document.getElementById('p-day').innerText = "ڕۆژ: " + act.dayOfWeek;
         document.getElementById('p-desc').innerText = act.description;
-
-        // Reset Images
         document.getElementById('adminImageInput').value = "";
         document.getElementById('p-images-grid').innerHTML = `
             <div class="a4-img-container">وێنەی ١</div>
@@ -435,7 +422,6 @@
         document.getElementById('hafba-modal').classList.remove('hidden');
     }
 
-    // Preview Local Images (No Upload)
     window.previewA4Images = (input) => {
         const grid = document.getElementById('p-images-grid');
         grid.innerHTML = "";
@@ -451,10 +437,8 @@
         }
     }
 
-    // Save as JPEG (Download)
     window.saveAsJpeg = () => {
         const element = document.getElementById("capture-area");
-        // Use html2canvas to take screenshot
         html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
             const link = document.createElement("a");
             link.download = "Hafba_Activity.jpg";
@@ -465,7 +449,6 @@
 
     window.closeHafba = () => document.getElementById('hafba-modal').classList.add('hidden');
 
-    // --- ADMIN ACCESS (PIN ONLY) ---
     window.checkPin = () => {
         if(document.getElementById('adminPin').value === SCHOOL_PIN) {
             document.getElementById('pin-screen').classList.add('hidden');
@@ -476,7 +459,6 @@
     }
 
     window.logout = () => location.reload();
-    
     window.delAct = async(id) => { if(confirm("بیسڕمەوە؟")) await deleteDoc(doc(db,"activities",id)); }
     
     window.editAct = (id) => {
