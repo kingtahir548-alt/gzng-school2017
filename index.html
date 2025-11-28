@@ -9,70 +9,173 @@
 
     <style>
         :root {
-            --primary: #1a2a6c;
-            --gold: #fdbb2d;
-            --light: #f4f7f6;
-            --danger: #c0392b;
-            --success: #27ae60;
+            --bg-body: #f0f2f5;
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --accent: #00cec9;
         }
 
         body {
             font-family: 'Rabar_021', 'Segoe UI', sans-serif;
-            background-color: var(--light);
-            margin: 0; padding: 0; color: #333;
+            background-color: var(--bg-body);
+            margin: 0; padding: 0; color: var(--text-main);
         }
 
+        /* --- Header --- */
         header {
-            background: linear-gradient(135deg, #141e30, #243b55);
-            color: white; padding: 15px; text-align: center;
-            border-bottom: 4px solid var(--gold);
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white; padding: 20px; text-align: center;
+            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 20px rgba(78, 84, 200, 0.2);
+            margin-bottom: 30px;
         }
-        .logo-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--gold); background: white; object-fit: contain; }
-        
+        .logo-img { 
+            width: 80px; height: 80px; border-radius: 50%; 
+            border: 4px solid rgba(255,255,255,0.3); background: white; object-fit: contain; 
+        }
+
+        /* --- Navigation --- */
         .nav-bar {
-            background: white; display: flex; justify-content: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: center; gap: 15px;
+            margin-top: -45px; margin-bottom: 30px;
         }
         .nav-btn {
-            padding: 15px 30px; border: none; background: none; 
-            font-family: inherit; font-size: 1.1em; cursor: pointer; 
-            transition: 0.3s; border-bottom: 3px solid transparent;
-            font-weight: bold;
+            background: white; border: none; padding: 12px 30px;
+            border-radius: 50px; cursor: pointer; font-family: inherit;
+            font-size: 1.1em; font-weight: bold; color: var(--text-light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.3s;
         }
-        .nav-btn.active { border-bottom-color: var(--primary); color: var(--primary); background: #f8f9fa; }
+        .nav-btn.active { 
+            background: var(--primary); color: white; transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(78, 84, 200, 0.4);
+        }
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- MODERN GRID CARD DESIGN --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding-bottom: 50px;
+        }
+
+        .modern-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.02);
+            display: flex; flex-direction: column;
+        }
+
+        .modern-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .card-banner {
+            height: 80px;
+            background: linear-gradient(135deg, #00b894, #00cec9); /* Green/Teal Gradient */
+            position: relative;
+        }
         
+        /* Different gradients for visual variety based on index (done via JS or CSS nth-child) */
+        .modern-card:nth-child(2n) .card-banner { background: linear-gradient(135deg, #fd79a8, #e84393); }
+        .modern-card:nth-child(3n) .card-banner { background: linear-gradient(135deg, #fab1a0, #ff7675); }
+
+        .card-avatar {
+            width: 60px; height: 60px;
+            background: white; border-radius: 50%;
+            position: absolute; bottom: -30px; right: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card-body {
+            padding: 40px 20px 20px 20px; /* Top padding clears the avatar */
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.2em; font-weight: bold; color: var(--text-main);
+            margin: 0 0 5px 0;
+        }
+
+        .card-subtitle {
+            font-size: 0.9em; color: var(--text-light);
+            display: block; margin-bottom: 15px;
+        }
+
+        .card-text {
+            font-size: 0.95em; line-height: 1.6; color: #555;
+            background: #f9f9f9; padding: 10px; border-radius: 10px;
+            margin-bottom: 15px; min-height: 60px;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85em; color: #aaa; background: #fff;
+        }
+
+        .badge {
+            background: #dfe6e9; color: #2d3436; padding: 5px 10px;
+            border-radius: 15px; font-size: 0.8em; font-weight: bold;
+        }
+        
+        .today-badge {
+            background: #ffeaa7; color: #d63031; padding: 5px 12px;
+            border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(253, 203, 110, 0.3);
+        }
+
+        /* --- Admin Buttons inside card --- */
+        .card-actions {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
+            padding: 10px 20px; background: #f8f9fa;
+        }
+        .card-actions button {
+            padding: 8px; border-radius: 8px; border: none; cursor: pointer;
+            font-size: 0.8em; color: white; transition: 0.2s;
+        }
+        .btn-hafba { background: #6c5ce7; }
+        .btn-edit { background: #0984e3; }
+        .btn-del { background: #d63031; }
+        .btn-hafba:hover { background: #5649c0; }
+
+        /* --- Forms & General --- */
         .form-box {
-            background: white; padding: 25px; border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); margin-bottom: 20px;
+            background: white; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto 30px auto;
         }
-        .input-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        .input-group { flex: 1; min-width: 200px; margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9em; font-weight: bold; }
+        
         input, select, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-family: inherit; box-sizing: border-box; font-size: 16px;
+            width: 100%; padding: 15px; margin-bottom: 15px;
+            border: 2px solid #f0f0f0; border-radius: 12px;
+            font-family: inherit; font-size: 16px; outline: none; transition: 0.3s;
+            box-sizing: border-box;
         }
+        input:focus, select:focus, textarea:focus { border-color: var(--secondary); }
         
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; color: white; font-size: 1em; font-weight: bold; width: 100%; margin-top: 5px; }
-        .btn-primary { background: var(--primary); }
-        .btn-danger { background: var(--danger); }
-        .btn-gold { background: var(--gold); color: #333; }
-        .btn-hafba { background: #2c3e50; color: white; border: 1px solid #333; }
-        
-        .activity-card {
-            background: white; margin-bottom: 20px; border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05); overflow: hidden;
-            border-right: 4px solid var(--primary);
+        label { font-weight: bold; margin-bottom: 8px; display: block; color: var(--text-main); }
+
+        .btn-main {
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            background: var(--primary); color: white; font-size: 1.1em;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
         }
-        .act-header { background: #f8f9fa; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .act-body { padding: 15px; }
-        .act-meta { display: flex; gap: 15px; font-size: 0.9em; color: #555; margin-bottom: 10px; background: #eee; padding: 8px; border-radius: 5px; flex-wrap: wrap; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(78, 84, 200, 0.4); }
 
-        .admin-controls { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
-        .admin-controls button { flex: 1; font-size: 0.9em; }
-
+        /* --- Hafba/A4 Modal & Print --- */
         #hafba-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000; display: flex;
@@ -80,23 +183,18 @@
             overflow-y: auto; padding: 20px; box-sizing: border-box;
         }
         .hafba-controls {
-            background: white; padding: 20px; border-radius: 10px; width: 100%; max-width: 500px;
+            background: white; padding: 20px; border-radius: 15px; width: 100%; max-width: 500px;
             margin-bottom: 20px; text-align: center;
         }
-
-        #a4-preview-container {
-            background: #525659; padding: 20px; width: 100%; display: flex; justify-content: center;
-            overflow: auto;
-        }
+        #a4-preview-container { background: #525659; padding: 20px; width: 100%; display: flex; justify-content: center; overflow: auto; }
         .a4-page {
-            width: 794px; min-height: 1123px; background: white; 
-            padding: 40px; box-sizing: border-box; position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            width: 794px; min-height: 1123px; background: white; padding: 40px;
+            box-sizing: border-box; position: relative;
         }
+        /* A4 Internal Styles */
         .a4-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
         .a4-logo { width: 80px; height: 80px; }
         .a4-title h1 { margin: 0; font-size: 24px; color: #000; }
-        .a4-title p { margin: 5px 0 0 0; font-size: 16px; color: #555; }
         .a4-teacher-box { background: #f0f0f0 !important; border-right: 5px solid #000; padding: 15px; margin-bottom: 20px; }
         .a4-teacher-name { font-size: 24px; font-weight: bold; margin: 0; }
         .a4-meta { font-size: 16px; margin-top: 10px; }
@@ -106,6 +204,15 @@
         .a4-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .a4-footer { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #ccc; padding-top: 5px; }
 
+        @media print {
+            body * { visibility: hidden; }
+            #hafba-modal, #hafba-modal * { visibility: visible; }
+            #hafba-modal { position: absolute; left: 0; top: 0; background: white; padding: 0; }
+            .hafba-controls { display: none; }
+            #a4-preview-container { background: white; padding: 0; display: block; }
+            .a4-page { box-shadow: none; margin: 0; width: 100%; }
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -114,101 +221,90 @@
 <header>
     <div class="logo-container">
         <img src="https://i.ibb.co/VY75GyWf/logo.png" alt="Logo" class="logo-img">
-        <h3>قوتابخانەی گزنگ</h3>
+        <h2 style="margin: 10px 0 0 0;">قوتابخانەی گزنگ</h2>
+        <p style="margin: 0; opacity: 0.8; font-size: 0.9em;">سیستەمی چالاکیەکان</p>
     </div>
 </header>
 
 <div class="nav-bar">
     <button class="nav-btn active" onclick="showTab('home')">🏠 سەرەکی</button>
     <button class="nav-btn" onclick="showTab('add')">📝 تۆمارکردن</button>
-    <button class="nav-btn" onclick="showTab('admin')" style="color: var(--danger);">🔒 ئەدمین</button>
+    <button class="nav-btn" onclick="showTab('admin')" style="color: #d63031;">🔒 ئەدمین</button>
 </div>
 
 <div class="container">
 
     <div id="home-view">
-        <div style="background: var(--gold); padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-            <h4 id="todayDateDisplay" style="margin:0;">ئەمڕۆ: ...</h4>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <span style="background: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); font-weight: bold; color: var(--text-light);">
+                📅 <span id="todayDateDisplay">...</span>
+            </span>
         </div>
-        <div id="activitiesList">
-            <p style="text-align: center;">جاری بار دەکات...</p>
+        
+        <div id="activitiesList" class="grid-container">
+            <p style="text-align: center; grid-column: 1/-1;">جاری بار دەکات...</p>
         </div>
     </div>
 
     <div id="add-view" class="hidden">
         <div class="form-box">
-            <h3 style="text-align: center; color: var(--primary);">📝 فۆڕمی تۆمارکردنی چالاکی</h3>
-            <p style="text-align: center; color: #777; font-size: 0.9em;">تایبەت بە مامۆستایان</p>
+            <h3 style="text-align: center; color: var(--primary);">📝 فۆڕمی مامۆستایان</h3>
             <input type="hidden" id="editId">
             
-            <div class="input-group">
-                <label>ناوی سیانی مامۆستا</label>
-                <input type="text" id="tName" placeholder="ناوی تەواو بنووسە">
-            </div>
+            <label>ناوی سیانی مامۆستا</label>
+            <input type="text" id="tName" placeholder="ناوی تەواو">
 
-            <div class="input-row">
-                <div class="input-group">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
                     <label>بابەت / وانە</label>
                     <input type="text" id="tSubject" placeholder="نموونە: زانست">
                 </div>
-                <div class="input-group">
+                <div>
                     <label>ڕۆژ</label>
                     <select id="tDay">
-                        <option value="شەممە">شەممە</option>
-                        <option value="یەکشەممە">یەکشەممە</option>
-                        <option value="دووشەممە">دووشەممە</option>
-                        <option value="سێشەممە">سێشەممە</option>
-                        <option value="چوارشەممە">چوارشەممە</option>
-                        <option value="پێنجشەممە">پێنجشەممە</option>
-                        <option value="هەینی">هەینی</option>
+                        <option>شەممە</option><option>یەکشەممە</option><option>دووشەممە</option>
+                        <option>سێشەممە</option><option>چوارشەممە</option><option>پێنجشەممە</option><option>هەینی</option>
                     </select>
                 </div>
             </div>
 
-            <div class="input-row">
-                <div class="input-group">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
                     <label>وانەی چەندەم؟</label>
                     <select id="tPeriod">
-                        <option value="1">یەکەم</option>
-                        <option value="2">دووەم</option>
-                        <option value="3">سێیەم</option>
-                        <option value="4">چوارەم</option>
-                        <option value="5">پێنجەم</option>
-                        <option value="6">شەشەم</option>
+                        <option value="1">یەکەم</option><option value="2">دووەم</option><option value="3">سێیەم</option>
+                        <option value="4">چوارەم</option><option value="5">پێنجەم</option><option value="6">شەشەم</option>
                     </select>
                 </div>
-                <div class="input-group">
+                <div>
                     <label>بەروار</label>
                     <input type="date" id="tDate">
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>وردەکاری چالاکی</label>
-                <textarea id="tDesc" rows="5" placeholder="لێرە بنووسە..."></textarea>
-            </div>
+            <label>وردەکاری چالاکی</label>
+            <textarea id="tDesc" rows="4" placeholder="لێرە بنووسە..."></textarea>
 
-            <button class="btn btn-primary" id="submitBtn" onclick="saveActivity()">تۆمارکردن ✅</button>
-            <button class="btn btn-danger hidden" id="cancelEditBtn" onclick="resetForm()">پاشگەزبوونەوە ❌</button>
+            <button class="btn-main" id="submitBtn" onclick="saveActivity()">تۆمارکردن ✅</button>
+            <button class="btn-main" id="cancelEditBtn" onclick="resetForm()" style="background:#ff7675; margin-top:10px;" class="hidden">پاشگەزبوونەوە ❌</button>
         </div>
     </div>
 
     <div id="admin-view" class="hidden">
-        <div id="pin-screen" class="form-box" style="text-align: center; max-width: 350px; margin: 40px auto;">
+        <div id="pin-screen" class="form-box" style="text-align: center; max-width: 400px;">
             <h3>🔒 بەشی ئەدمین</h3>
             <p>تکایە کۆدی نهێنی بنووسە</p>
             <input type="password" id="adminPin" style="text-align: center; font-size: 24px; letter-spacing: 5px;" placeholder="****">
-            <button class="btn btn-primary" onclick="checkPin()">چوونەژوورەوە</button>
+            <button class="btn-main" onclick="checkPin()">چوونەژوورەوە</button>
         </div>
 
         <div id="admin-dashboard" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3>بەڕێوبەرایەتی 🎓</h3>
-                <button class="btn btn-danger" onclick="logout()" style="width: auto;">چوونەدەرەوە</button>
+                <button onclick="logout()" style="background:#dfe6e9; border:none; padding:10px 20px; border-radius:20px; cursor:pointer;">چوونەدەرەوە</button>
             </div>
             
-            <h4 style="border-bottom: 2px solid #ddd; padding-bottom: 10px;">بەڕێوەبردنی چالاکیەکان:</h4>
-            <div id="adminActivitiesList">
+            <div id="adminActivitiesList" class="grid-container">
                 </div>
         </div>
     </div>
@@ -218,11 +314,11 @@
 <div id="hafba-modal" class="hidden">
     <div class="hafba-controls">
         <h3>ئامادەکردنی پەڕەی هەفتە (A4)</h3>
-        <p style="color:red; font-size:0.9em;">تکایە ٤ وێنەکەی ناو مۆبایلەکەت دیاری بکە:</p>
-        <input type="file" id="adminImageInput" multiple accept="image/*" onchange="previewA4Images(this)" style="margin-bottom: 10px;">
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button class="btn btn-danger" onclick="closeHafba()">داخستن ❌</button>
-            <button class="btn btn-gold" onclick="saveAsJpeg()">دابەزاندن (Image) 📥</button>
+        <p style="color:#d63031; font-size:0.9em;">تکایە ٤ وێنەکەی ناو مۆبایلەکەت دیاری بکە:</p>
+        <input type="file" id="adminImageInput" multiple accept="image/*" onchange="previewA4Images(this)" style="margin-bottom: 15px;">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button onclick="closeHafba()" style="padding:10px 20px; border-radius:10px; border:none; background:#ff7675; color:white; cursor:pointer;">داخستن</button>
+            <button onclick="saveAsJpeg()" style="padding:10px 20px; border-radius:10px; border:none; background:#fdcb6e; color:#333; cursor:pointer;">دابەزاندن (Image)</button>
         </div>
     </div>
 
@@ -236,7 +332,6 @@
                 </div>
                 <div style="width:80px;"></div>
             </div>
-
             <div class="a4-teacher-box">
                 <h2 class="a4-teacher-name" id="p-teacher">م. [ناوی مامۆستا]</h2>
                 <div class="a4-meta">
@@ -245,19 +340,16 @@
                     <span id="p-day">ڕۆژ: ...</span>
                 </div>
             </div>
-
             <div class="a4-content">
                 <strong>وردەکاری چالاکی:</strong>
                 <p id="p-desc">...</p>
             </div>
-
             <div class="a4-images-grid" id="p-images-grid">
                 <div class="a4-img-container">وێنەی ١</div>
                 <div class="a4-img-container">وێنەی ٢</div>
                 <div class="a4-img-container">وێنەی ٣</div>
                 <div class="a4-img-container">وێنەی ٤</div>
             </div>
-
             <div class="a4-footer">
                 سیستەمی ئەلیکترۆنی قوتابخانەی گزنگ - بەڕێوبەرایەتی
             </div>
@@ -289,11 +381,11 @@
         ['home', 'add', 'admin'].forEach(t => document.getElementById(t+'-view').classList.add('hidden'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tab+'-view').classList.remove('hidden');
+        
         const btns = document.querySelectorAll('.nav-btn');
         if(tab==='home') btns[0].classList.add('active');
         if(tab==='add') {
             btns[1].classList.add('active');
-            // کاتێک دەچێتە سەر فۆڕمەکە، بەرواری ئەمڕۆ دادەنێت
             document.getElementById('tDate').valueAsDate = new Date();
         }
         if(tab==='admin') btns[2].classList.add('active');
@@ -312,11 +404,7 @@
         const date = document.getElementById('tDate').value;
         const desc = document.getElementById('tDesc').value;
 
-        // Validation - وردەکاری بۆ ئەوەی بزانیت کامەی بەتاڵە
-        if(!name) return alert("❌ تکایە ناوی سیانی مامۆستا بنووسە");
-        if(!sub) return alert("❌ تکایە بابەت / وانە بنووسە");
-        if(!date) return alert("❌ تکایە بەروار دیاری بکە");
-        if(!desc) return alert("❌ تکایە وردەکاری چالاکی بنووسە");
+        if(!name || !sub || !date || !desc) return alert("⚠️ هەموو خانەکان پڕ بکەرەوە");
 
         btn.innerText = "جاری دەنێرێت... ⏳";
         btn.disabled = true;
@@ -337,9 +425,7 @@
             }
             resetForm();
             window.showTab('home');
-        } catch(e) {
-            alert("هەڵە: " + e.message);
-        }
+        } catch(e) { alert("هەڵە: " + e.message); }
         btn.innerText = "تۆمارکردن ✅";
         btn.disabled = false;
     }
@@ -349,7 +435,7 @@
         document.getElementById('tName').value = "";
         document.getElementById('tSubject').value = "";
         document.getElementById('tDesc').value = "";
-        document.getElementById('tDate').valueAsDate = new Date(); // Reset to today
+        document.getElementById('tDate').valueAsDate = new Date();
         document.getElementById('submitBtn').innerText = "تۆمارکردن ✅";
         document.getElementById('cancelEditBtn').classList.add('hidden');
     }
@@ -367,43 +453,49 @@
             allActs.push(data);
             const isToday = (data.date === todayStr);
 
-            homeList.innerHTML += `
-                <div class="activity-card" style="${isToday ? 'border-right: 5px solid var(--success);' : ''}">
-                    <div class="act-header">
-                        <strong>👤 ${data.teacherName}</strong>
-                        <small>${data.date}</small>
-                    </div>
-                    <div class="act-body">
-                        <div class="act-meta">
-                            <span>📚 ${data.subject}</span>
-                            <span>📅 ${data.dayOfWeek}</span>
-                            <span>⏰ ${data.period}</span>
+            // Modern Card HTML
+            const cardHtml = `
+                <div class="modern-card">
+                    <div class="card-banner"></div>
+                    <div class="card-avatar">👤</div>
+                    <div class="card-body">
+                        ${isToday ? '<div class="today-badge">⭐ ئەمڕۆیە</div>' : ''}
+                        <h3 class="card-title">${data.teacherName}</h3>
+                        <span class="card-subtitle">${data.subject}</span>
+                        <div class="card-text">${data.description.substring(0, 100)}...</div>
+                        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <span class="badge">📅 ${data.dayOfWeek}</span>
+                            <span class="badge">⏰ وانەی ${data.period}</span>
                         </div>
-                        <p>${data.description}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>${data.date}</span>
+                        <span>قوتابخانەی گزنگ</span>
                     </div>
                 </div>
             `;
+            homeList.innerHTML += cardHtml;
 
+            // Admin Card (With Actions)
             adminList.innerHTML += `
-                <div class="activity-card">
-                    <div class="act-header">
-                        <strong>${data.teacherName}</strong>
-                        <small>${data.date}</small>
+                <div class="modern-card">
+                    <div class="card-banner" style="height:50px;"></div>
+                    <div class="card-body" style="padding-top:20px;">
+                        <h3 class="card-title" style="font-size:1em;">${data.teacherName}</h3>
+                        <span class="card-subtitle">${data.date} - ${data.subject}</span>
                     </div>
-                    <div class="act-body">
-                        <p>${data.subject} - ${data.dayOfWeek}</p>
-                        <div class="admin-controls">
-                            <button class="btn btn-hafba" onclick="openHafba('${data.id}')">📄 هەفتە (A4)</button>
-                            <button class="btn btn-primary" onclick="editAct('${data.id}')">✏️ Edit</button>
-                            <button class="btn btn-danger" onclick="delAct('${data.id}')">🗑️ Delete</button>
-                        </div>
+                    <div class="card-actions">
+                        <button class="btn-hafba" onclick="openHafba('${data.id}')">📄 هەفتە</button>
+                        <button class="btn-edit" onclick="editAct('${data.id}')">✏️ Edit</button>
+                        <button class="btn-del" onclick="delAct('${data.id}')">🗑️ Delete</button>
                     </div>
                 </div>
             `;
         });
-        if(allActs.length === 0) homeList.innerHTML = "<p style='text-align:center'>هیچ نییە</p>";
+        if(allActs.length === 0) homeList.innerHTML = "<p style='grid-column:1/-1; text-align:center;'>هیچ چالاکیەک نییە</p>";
     });
 
+    // Hafba & Admin Logic (Same as before)
     window.openHafba = (id) => {
         const act = allActs.find(a => a.id === id);
         if(!act) return;
@@ -426,41 +518,32 @@
         const grid = document.getElementById('p-images-grid');
         grid.innerHTML = "";
         if (input.files && input.files.length > 0) {
-            const files = Array.from(input.files).slice(0, 4);
-            files.forEach(file => {
+            Array.from(input.files).slice(0, 4).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    grid.innerHTML += `<div class="a4-img-container"><img src="${e.target.result}"></div>`;
-                }
+                reader.onload = (e) => grid.innerHTML += `<div class="a4-img-container"><img src="${e.target.result}"></div>`;
                 reader.readAsDataURL(file);
             });
         }
     }
 
     window.saveAsJpeg = () => {
-        const element = document.getElementById("capture-area");
-        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+        html2canvas(document.getElementById("capture-area"), { scale: 2, useCORS: true }).then(canvas => {
             const link = document.createElement("a");
-            link.download = "Hafba_Activity.jpg";
+            link.download = "Gzng_Activity.jpg";
             link.href = canvas.toDataURL("image/jpeg");
             link.click();
         });
     }
 
     window.closeHafba = () => document.getElementById('hafba-modal').classList.add('hidden');
-
     window.checkPin = () => {
         if(document.getElementById('adminPin').value === SCHOOL_PIN) {
             document.getElementById('pin-screen').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
-        } else {
-            alert("کۆد هەڵەیە");
-        }
+        } else alert("کۆد هەڵەیە");
     }
-
     window.logout = () => location.reload();
     window.delAct = async(id) => { if(confirm("بیسڕمەوە؟")) await deleteDoc(doc(db,"activities",id)); }
-    
     window.editAct = (id) => {
         const a = allActs.find(x=>x.id===id);
         if(!a) return;
