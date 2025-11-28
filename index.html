@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی چالاکیەکانی قوتابخانەی گزنگ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rabar_021&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --gold: #fdbb2d;
+            --light: #f4f7f6;
+            --danger: #c0392b;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Rabar_021', 'Segoe UI', sans-serif;
+            background-color: var(--light);
+            margin: 0; padding: 0; color: #333;
+        }
+
+        /* --- Header & Nav --- */
+        header {
+            background: linear-gradient(135deg, #141e30, #243b55);
+            color: white; padding: 15px; text-align: center;
+            border-bottom: 4px solid var(--gold);
+        }
+        .logo-img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--gold); background: white; object-fit: contain; }
+        
+        .nav-bar {
+            background: white; display: flex; justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;
+        }
+        .nav-btn {
+            padding: 15px 30px; border: none; background: none; 
+            font-family: inherit; font-size: 1.1em; cursor: pointer; 
+            transition: 0.3s; border-bottom: 3px solid transparent;
+            font-weight: bold;
+        }
+        .nav-btn.active { border-bottom-color: var(--primary); color: var(--primary); background: #f8f9fa; }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        
+        /* --- Forms --- */
+        .form-box {
+            background: white; padding: 25px; border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 4px solid var(--primary); margin-bottom: 20px;
+        }
+        .input-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .input-group { flex: 1; min-width: 200px; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #666; font-size: 0.9em; font-weight: bold; }
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-family: inherit; box-sizing: border-box; font-size: 16px;
+        }
+        
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; color: white; font-size: 1em; font-weight: bold; width: 100%; margin-top: 5px; }
+        .btn-primary { background: var(--primary); }
+        .btn-danger { background: var(--danger); }
+        .btn-gold { background: var(--gold); color: #333; }
+        .btn-hafba { background: #2c3e50; color: white; border: 1px solid #333; }
+        
+        /* --- Activity List --- */
+        .activity-card {
+            background: white; margin-bottom: 20px; border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05); overflow: hidden;
+            border-right: 4px solid var(--primary);
+        }
+        .act-header { background: #f8f9fa; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .act-body { padding: 15px; }
+        .act-meta { display: flex; gap: 15px; font-size: 0.9em; color: #555; margin-bottom: 10px; background: #eee; padding: 8px; border-radius: 5px; flex-wrap: wrap; }
+
+        /* --- Admin Controls --- */
+        .admin-controls { display: flex; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
+        .admin-controls button { flex: 1; font-size: 0.9em; }
+
+        /* --- Hafba Modal --- */
+        #hafba-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            overflow-y: auto; padding: 20px; box-sizing: border-box;
+        }
+        .hafba-controls {
+            background: white; padding: 20px; border-radius: 10px; width: 100%; max-width: 500px;
+            margin-bottom: 20px; text-align: center;
+        }
+
+        /* --- A4 Paper Design --- */
+        #a4-preview-container {
+            background: #525659; padding: 20px; width: 100%; display: flex; justify-content: center;
+            overflow: auto;
+        }
+        .a4-page {
+            width: 794px; /* A4 Width in px at 96dpi */
+            min-height: 1123px; /* A4 Height */
+            background: white; 
+            padding: 40px; box-sizing: border-box; position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .a4-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
+        .a4-logo { width: 80px; height: 80px; }
+        .a4-title h1 { margin: 0; font-size: 24px; color: #000; }
+        .a4-title p { margin: 5px 0 0 0; font-size: 16px; color: #555; }
+        .a4-teacher-box { background: #f0f0f0 !important; border-right: 5px solid #000; padding: 15px; margin-bottom: 20px; }
+        .a4-teacher-name { font-size: 24px; font-weight: bold; margin: 0; }
+        .a4-meta { font-size: 16px; margin-top: 10px; }
+        .a4-content { font-size: 18px; line-height: 1.6; margin-bottom: 20px; text-align: justify; min-height: 100px; border: 1px solid #ddd; padding: 15px; }
+        .a4-images-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .a4-img-container { height: 250px; border: 1px solid #333; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #eee; }
+        .a4-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .a4-footer { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #ccc; padding-top: 5px; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/VY75GyWf/logo.png" alt="Logo" class="logo-img">
+        <h3>قوتابخانەی گزنگ</h3>
+    </div>
+</header>
+
+<div class="nav-bar">
+    <button class="nav-btn active" onclick="showTab('home')">🏠 سەرەکی</button>
+    <button class="nav-btn" onclick="showTab('add')">📝 تۆمارکردن</button>
+    <button class="nav-btn" onclick="showTab('admin')" style="color: var(--danger);">🔒 ئەدمین</button>
+</div>
+
+<div class="container">
+
+    <div id="home-view">
+        <div style="background: var(--gold); padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+            <h4 id="todayDateDisplay" style="margin:0;">ئەمڕۆ: ...</h4>
+        </div>
+        <div id="activitiesList">
+            <p style="text-align: center;">جاری بار دەکات...</p>
+        </div>
+    </div>
+
+    <div id="add-view" class="hidden">
+        <div class="form-box">
+            <h3 style="text-align: center; color: var(--primary);">📝 فۆڕمی تۆمارکردنی چالاکی</h3>
+            <p style="text-align: center; color: #777; font-size: 0.9em;">تایبەت بە مامۆستایان</p>
+            <input type="hidden" id="editId">
+            
+            <div class="input-group">
+                <label>ناوی سیانی مامۆستا</label>
+                <input type="text" id="tName" placeholder="ناوی تەواو بنووسە">
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>بابەت / وانە</label>
+                    <input type="text" id="tSubject" placeholder="نموونە: زانست">
+                </div>
+                <div class="input-group">
+                    <label>ڕۆژ</label>
+                    <select id="tDay">
+                        <option value="شەممە">شەممە</option>
+                        <option value="یەکشەممە">یەکشەممە</option>
+                        <option value="دووشەممە">دووشەممە</option>
+                        <option value="سێشەممە">سێشەممە</option>
+                        <option value="چوارشەممە">چوارشەممە</option>
+                        <option value="پێنجشەممە">پێنجشەممە</option>
+                        <option value="هەینی">هەینی</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>وانەی چەندەم؟</label>
+                    <select id="tPeriod">
+                        <option value="1">یەکەم</option>
+                        <option value="2">دووەم</option>
+                        <option value="3">سێیەم</option>
+                        <option value="4">چوارەم</option>
+                        <option value="5">پێنجەم</option>
+                        <option value="6">شەشەم</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>بەروار</label>
+                    <input type="date" id="tDate">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>وردەکاری چالاکی</label>
+                <textarea id="tDesc" rows="5" placeholder="لێرە بنووسە..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" id="submitBtn" onclick="saveActivity()">تۆمارکردن ✅</button>
+            <button class="btn btn-danger hidden" id="cancelEditBtn" onclick="resetForm()">پاشگەزبوونەوە ❌</button>
+        </div>
+    </div>
+
+    <div id="admin-view" class="hidden">
+        
+        <div id="pin-screen" class="form-box" style="text-align: center; max-width: 350px; margin: 40px auto;">
+            <h3>🔒 بەشی ئەدمین</h3>
+            <p>تکایە کۆدی نهێنی بنووسە</p>
+            <input type="password" id="adminPin" style="text-align: center; font-size: 24px; letter-spacing: 5px;" placeholder="****">
+            <button class="btn btn-primary" onclick="checkPin()">چوونەژوورەوە</button>
+        </div>
+
+        <div id="admin-dashboard" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>بەڕێوبەرایەتی 🎓</h3>
+                <button class="btn btn-danger" onclick="logout()" style="width: auto;">چوونەدەرەوە</button>
+            </div>
+            
+            <h4 style="border-bottom: 2px solid #ddd; padding-bottom: 10px;">بەڕێوەبردنی چالاکیەکان:</h4>
+            <div id="adminActivitiesList">
+                </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="hafba-modal" class="hidden">
+    <div class="hafba-controls">
+        <h3>ئامادەکردنی پەڕەی هەفتە (A4)</h3>
+        <p style="color:red; font-size:0.9em;">تکایە ٤ وێنەکەی ناو مۆبایلەکەت دیاری بکە:</p>
+        <input type="file" id="adminImageInput" multiple accept="image/*" onchange="previewA4Images(this)" style="margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn btn-danger" onclick="closeHafba()">داخستن ❌</button>
+            <button class="btn btn-gold" onclick="saveAsJpeg()">دابەزاندن (Image) 📥</button>
+        </div>
+    </div>
+
+    <div id="a4-preview-container">
+        <div class="a4-page" id="capture-area">
+            <div class="a4-header">
+                <img src="https://i.ibb.co/VY75GyWf/logo.png" class="a4-logo" alt="Logo">
+                <div class="a4-title">
+                    <h1>قوتابخانەی گزنگی بنەڕەتی</h1>
+                    <p>فۆڕمی چالاکی هەفتانە (هەفتە)</p>
+                </div>
+                <div style="width:80px;"></div>
+            </div>
+
+            <div class="a4-teacher-box">
+                <h2 class="a4-teacher-name" id="p-teacher">م. [ناوی مامۆستا]</h2>
+                <div class="a4-meta">
+                    <span id="p-subject">بابەت: ...</span> | 
+                    <span id="p-date">بەروار: ...</span> | 
+                    <span id="p-day">ڕۆژ: ...</span>
+                </div>
+            </div>
+
+            <div class="a4-content">
+                <strong>وردەکاری چالاکی:</strong>
+                <p id="p-desc">...</p>
+            </div>
+
+            <div class="a4-images-grid" id="p-images-grid">
+                <div class="a4-img-container">وێنەی ١</div>
+                <div class="a4-img-container">وێنەی ٢</div>
+                <div class="a4-img-container">وێنەی ٣</div>
+                <div class="a4-img-container">وێنەی ٤</div>
+            </div>
+
+            <div class="a4-footer">
+                سیستەمی ئەلیکترۆنی قوتابخانەی گزنگ - بەڕێوبەرایەتی
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // تەنها داتابەیسمان پێویستە، ستۆریجم ل لابرد
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDI8eXKnSRh7EVmImQSHsaL-RUPQBikj0I",
+        authDomain: "gzngschool-2b3eb.firebaseapp.com",
+        projectId: "gzngschool-2b3eb",
+        storageBucket: "gzngschool-2b3eb.firebasestorage.app",
+        messagingSenderId: "975432723584",
+        appId: "1:975432723584:web:4a5ae43fadff143b558a65",
+        measurementId: "G-1YY22QS0MF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const SCHOOL_PIN = "2024";
+    let allActs = [];
+
+    // --- Helpers ---
+    window.showTab = (tab) => {
+        ['home', 'add', 'admin'].forEach(t => document.getElementById(t+'-view').classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tab+'-view').classList.remove('hidden');
+        
+        const btns = document.querySelectorAll('.nav-btn');
+        if(tab==='home') btns[0].classList.add('active');
+        if(tab==='add') btns[1].classList.add('active');
+        if(tab==='admin') btns[2].classList.add('active');
+    }
+
+    const getTodayName = () => ['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'][new Date().getDay()];
+    document.getElementById('todayDateDisplay').innerText = `ئەمڕۆ: ${getTodayName()} (${new Date().toLocaleDateString('ku-IQ')})`;
+
+    // --- Teacher Save Logic (TEXT ONLY) ---
+    window.saveActivity = async () => {
+        const btn = document.getElementById('submitBtn');
+        const editId = document.getElementById('editId').value;
+        const name = document.getElementById('tName').value;
+        const sub = document.getElementById('tSubject').value;
+        const day = document.getElementById('tDay').value;
+        const per = document.getElementById('tPeriod').value;
+        const date = document.getElementById('tDate').value;
+        const desc = document.getElementById('tDesc').value;
+
+        if(!name || !sub || !date || !desc) return alert("تکایە خانەکان پڕ بکەرەوە");
+
+        btn.innerText = "جاری دەنێرێت... ⏳";
+        btn.disabled = true;
+
+        try {
+            const payload = {
+                teacherName: name, subject: sub, dayOfWeek: day, 
+                period: per, date: date, description: desc, 
+                timestamp: new Date()
+            };
+
+            if(editId) {
+                await updateDoc(doc(db, "activities", editId), payload);
+                alert("زانیارییەکان نوێکرانەوە!");
+            } else {
+                await addDoc(collection(db, "activities"), payload);
+                alert("سوپاس مامۆستا، چالاکیەکەت تۆمارکرا!");
+            }
+            resetForm();
+            window.showTab('home');
+        } catch(e) {
+            alert("هەڵە: " + e.message);
+        }
+        btn.innerText = "تۆمارکردن ✅";
+        btn.disabled = false;
+    }
+
+    window.resetForm = () => {
+        document.getElementById('editId').value = "";
+        document.getElementById('tName').value = "";
+        document.getElementById('tSubject').value = "";
+        document.getElementById('tDesc').value = "";
+        document.getElementById('submitBtn').innerText = "تۆمارکردن ✅";
+        document.getElementById('cancelEditBtn').classList.add('hidden');
+    }
+
+    // --- Load Data (TEXT ONLY) ---
+    const q = query(collection(db, "activities"), orderBy("date", "desc"));
+    onSnapshot(q, (snap) => {
+        allActs = [];
+        const homeList = document.getElementById('activitiesList');
+        const adminList = document.getElementById('adminActivitiesList');
+        homeList.innerHTML = ""; adminList.innerHTML = "";
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        snap.forEach(d => {
+            const data = {id: d.id, ...d.data()};
+            allActs.push(data);
+            const isToday = (data.date === todayStr);
+
+            // 1. PUBLIC LIST
+            homeList.innerHTML += `
+                <div class="activity-card" style="${isToday ? 'border-right: 5px solid var(--success);' : ''}">
+                    <div class="act-header">
+                        <strong>👤 ${data.teacherName}</strong>
+                        <small>${data.date}</small>
+                    </div>
+                    <div class="act-body">
+                        <div class="act-meta">
+                            <span>📚 ${data.subject}</span>
+                            <span>📅 ${data.dayOfWeek}</span>
+                            <span>⏰ ${data.period}</span>
+                        </div>
+                        <p>${data.description}</p>
+                    </div>
+                </div>
+            `;
+
+            // 2. ADMIN LIST
+            adminList.innerHTML += `
+                <div class="activity-card">
+                    <div class="act-header">
+                        <strong>${data.teacherName}</strong>
+                        <small>${data.date}</small>
+                    </div>
+                    <div class="act-body">
+                        <p>${data.subject} - ${data.dayOfWeek}</p>
+                        <div class="admin-controls">
+                            <button class="btn btn-hafba" onclick="openHafba('${data.id}')">📄 هەفتە (A4)</button>
+                            <button class="btn btn-primary" onclick="editAct('${data.id}')">✏️ Edit</button>
+                            <button class="btn btn-danger" onclick="delAct('${data.id}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        if(allActs.length === 0) homeList.innerHTML = "<p style='text-align:center'>هیچ نییە</p>";
+    });
+
+    // --- HAFBA LOGIC (LOCAL IMAGES) ---
+    window.openHafba = (id) => {
+        const act = allActs.find(a => a.id === id);
+        if(!act) return;
+
+        // Fill Text Info from DB
+        document.getElementById('p-teacher').innerText = "م. " + act.teacherName;
+        document.getElementById('p-subject').innerText = "بابەت: " + act.subject;
+        document.getElementById('p-date').innerText = "بەروار: " + act.date;
+        document.getElementById('p-day').innerText = "ڕۆژ: " + act.dayOfWeek;
+        document.getElementById('p-desc').innerText = act.description;
+
+        // Reset Images
+        document.getElementById('adminImageInput').value = "";
+        document.getElementById('p-images-grid').innerHTML = `
+            <div class="a4-img-container">وێنەی ١</div>
+            <div class="a4-img-container">وێنەی ٢</div>
+            <div class="a4-img-container">وێنەی ٣</div>
+            <div class="a4-img-container">وێنەی ٤</div>
+        `;
+        document.getElementById('hafba-modal').classList.remove('hidden');
+    }
+
+    // Preview Local Images (No Upload)
+    window.previewA4Images = (input) => {
+        const grid = document.getElementById('p-images-grid');
+        grid.innerHTML = "";
+        if (input.files && input.files.length > 0) {
+            const files = Array.from(input.files).slice(0, 4);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    grid.innerHTML += `<div class="a4-img-container"><img src="${e.target.result}"></div>`;
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    // Save as JPEG (Download)
+    window.saveAsJpeg = () => {
+        const element = document.getElementById("capture-area");
+        // Use html2canvas to take screenshot
+        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+            const link = document.createElement("a");
+            link.download = "Hafba_Activity.jpg";
+            link.href = canvas.toDataURL("image/jpeg");
+            link.click();
+        });
+    }
+
+    window.closeHafba = () => document.getElementById('hafba-modal').classList.add('hidden');
+
+    // --- ADMIN ACCESS (PIN ONLY) ---
+    window.checkPin = () => {
+        if(document.getElementById('adminPin').value === SCHOOL_PIN) {
+            document.getElementById('pin-screen').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+        } else {
+            alert("کۆد هەڵەیە");
+        }
+    }
+
+    window.logout = () => location.reload();
+    
+    window.delAct = async(id) => { if(confirm("بیسڕمەوە؟")) await deleteDoc(doc(db,"activities",id)); }
+    
+    window.editAct = (id) => {
+        const a = allActs.find(x=>x.id===id);
+        if(!a) return;
+        document.getElementById('editId').value = a.id;
+        document.getElementById('tName').value = a.teacherName;
+        document.getElementById('tSubject').value = a.subject;
+        document.getElementById('tDay').value = a.dayOfWeek;
+        document.getElementById('tPeriod').value = a.period;
+        document.getElementById('tDate').value = a.date;
+        document.getElementById('tDesc').value = a.description;
+        document.getElementById('submitBtn').innerText = "نوێکردنەوە 🔄";
+        document.getElementById('cancelEditBtn').classList.remove('hidden');
+        document.getElementById('hafba-modal').classList.add('hidden');
+        showTab('add'); 
+    }
+</script>
+</body>
+</html>
